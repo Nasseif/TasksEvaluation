@@ -1,0 +1,97 @@
+﻿@model CourseDTO
+
+@{
+    ViewData["Title"] = "Course Details";
+}
+
+<h1>Course Details</h1>
+<hr />
+<div class="container mt-4">
+    <div class="row">
+        <!-- Details -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header text-white bg-primary">
+                    <h5 class="card-title">@Model.Title</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text"><b>IsCompleted: </b>@Model.IsCompleted</p>
+                    <p class="card-text"><b>IsDeleted: </b>@Model.IsDeleted</p>
+                    <p class="card-text"><b>EntryDate: </b>@Model.EntryDate</p>
+                    <p class="card-text"><b>UpdateDate: </b>@Model.UpdateDate</p>
+                    <p class="card-text">
+                        <b>Groups: </b>
+                        @if (Model.Groups != null && Model.Groups.Any())
+                        {
+
+                            @foreach (var group in Model.Groups)
+                            {
+                                @group.Title
+                            }
+                        }
+                        else
+                        {
+                            <span>No groups available.</span>
+                        }
+                    </p>
+                    <p class="card-text">
+                        <b>Status: </b>
+                        @if (DateTime.Now >= Model.EntryDate)
+                        {
+                            <span class="badge bg-success text-white">AVAILABLE</span>
+                        }
+                        else if (DateTime.Now < Model.EntryDate)
+                        {
+                            <span class="badge bg-danger text-white">EXPIRED</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-primary text-white">UPCOMING</span>
+                        }
+                    </p>
+                </div>
+                <div class="card-footer">
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+                        </div>
+                    }
+                    <br />
+                    <a class="btn btn-outline-primary float-right" asp-action="Index">Back to List</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignments & Solutions -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header text-white bg-secondary">
+                    <h5 class="card-title">Assignments & Solutions</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Assignments != null && Model.Assignments.Any())
+                    {
+                        <ul class="list-group">
+                            @foreach (var assignment in Model.Assignments)
+                            {
+                                <li class="list-group-item">
+                                    <b>Assignment:</b> @assignment.Title
+                                    <br />
+                                    <b>Description:</b> @assignment.Description
+                                    <br />
+                                    <a asp-action="Details" asp-controller="Assignment" asp-route-id="@assignment.Id" class="btn btn-primary mt-2">View Assignment</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No assignments available for this course.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
